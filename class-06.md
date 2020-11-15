@@ -107,5 +107,19 @@ print 'Tails:', outcomes['tails']
 
 
 
+## Dependency Injection
+- what is it and how to use it?
+- *dependency injection* is a technique whereby one object or static method supplies dependencies of another object
+- "When class A uses some funcitonality of class B, then its said that class A has a dependency of class B"
+    - *transferring the task of creating the object to someone else and directly using the dependency is called dependency injection*
 
+**3 types of dependency injectiom**
+1. constructor injection: dependencies are provided through a class constructor
+2. setter injection: the client exposes a setter method that the injector uses to inject the dependency
+3. interface injection: dependency provides an injector method that will inject the dependency into any client passed to it. Clients need to implement an interface that exposes a *setter* method that *accepts* the dependency
+
+    **Dependency injection's responsbilities:**
+    1. create the objects
+    2. know which classes require those objects
+    3. provide them all those objects
 [<-- Back](README.md)
