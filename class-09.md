@@ -149,5 +149,8 @@ Object representation: str and repr
     1. __repr__: the official string representation of an object. This is how you would make an object of the class
     2. __str__: the informal or nicely printable string representation of an object
 
+*Callable Python Objects*
+- `__call__`
+    - you can make an object callable like a regular function by adding the `call` dunder method
 
 [<-- Back](README.md)
