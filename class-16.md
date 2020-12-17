@@ -215,3 +215,86 @@ def renew_book_librarian(request, pk):
 
     return render(request, 'catalog/book_renew_librarian.html', context)
 ```
+
+# Custom User Model
+- use a custom user model for all new Django projects
+
+- create and navigate into a dedicated directory called accounts for our code
+- install Django
+- make a new Django project called config
+- make a new app accounts
+- start the local web server
+```python
+$ cd ~/Desktop
+$ mkdir accounts && cd accounts
+$ pipenv install django~=3.1.0
+$ pipenv shell
+(accounts) $ django-admin.py startproject config .
+(accounts) $ python manage.py startapp accounts
+(accounts) $ python manage.py runserver
+```
+- run *migrate* after you create the customer user
+
+## AbstractUser vs. AbstractBaseUser
+- absractbaseuser requires more work
+
+To create the initial customer user model requires 4 steps:
+1. update config/settings.py
+2. create a new CustomUser model
+3. create a new UserCreation and UserChangeForm
+4. Update the admin
+- in settings you add the `accounts` app and use the **AUTH_USER_MODEL** to tell Django to use the new custom user model in place of the built-in `User` model
+
+- now we update the *models.py* with a new user model
+```python
+# accounts/models.py
+from django.contrib.auth.models import AbstractUser
+from django.db import models
+
+class CustomUser(AbstractUser):
+    pass
+    # add additional fields in here
+
+    def __str__(self):
+        return self.username
+```
+- now we need new versions of the form methods, stop the server and create a *new file* in the *accounts* app called **forms.py**
+
+--> update with... for example
+```python
+# accounts/forms.py
+from django import forms
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from .models import CustomUser
+
+class CustomUserCreationForm(UserCreationForm):
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
+
+class CustomUserChangeForm(UserChangeForm):
+
+    class Meta:
+        model = CustomUser
+        fields = ('username', 'email')
+```
+- then finally you update the **admin.py**
+```python
+# accounts/admin.py
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+from .models import CustomUser
+
+class CustomUserAdmin(UserAdmin):
+    add_form = CustomUserCreationForm
+    form = CustomUserChangeForm
+    model = CustomUser
+    list_display = ['email', 'username',]
+
+admin.site.register(CustomUser, CustomUserAdmin)
+```
+
+- **NOW** you can run `makemigrations` and `migrate` to create a new database that uses the customer user model
