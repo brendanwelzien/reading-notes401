@@ -202,3 +202,97 @@ $ curl http://127.0.0.1:8000/api/
 
 
 [<-- Back](README.md)
+
+# Django REST Framework API Permissions
+- with authentication and throttling, pemrissions determine whether a request gets *granted or denied* access
+- permission check use authentication info in the `request.user` and `request.auth` properties at the very start of the view
+    - permissions are used to give or deny access for different classes of users for different parts of the API
+    - corresponding access is the `IsAuthenticated` class in REST framework
+## How Permissions are Determined
+- if any permission check fails = exception will be raised, main body of view will not run
+
+## Object Level Permissions
+- object-level permissions are used to determine if a user should be allowed to act on an object, which will usually be a model instance
+    - this is run by generic views when `.get_object()` is called
+    - if you write your own views and want to add restrictions or if you override the `get_object` method on a generic view, you will need to use `.check_object_permissions(request, ob)` method at the view point you are trying to retrieve object
+        - this will then raise a `permissionDenied` or `NotAuthenticated` exception
+- exampel from DJANGO REST FRAMEWORK GUIDE
+```python
+def get_object(self):
+    obj = get_object_or_404(self.get_queryset(), pk=self.kwargs["pk"])
+    self.check_object_permissions(self.request, obj)
+    return obj
+```
+## Setting the Permission Policy
+- the policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting
+```python
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+```
+- you can also set policy through a per-view basis using the `APIView` class-based views
+```python
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+class ExampleView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        content = {
+            'status': 'request was permitted'
+        }
+        return Response(content)
+```
+## API Reference
+- the `AllowAny` permission class will allow unrestricted access regardless of the request made!
+- the `IsAuthenticated` permission class denies permission to any unathenticated user and allows permission otherwise!
+- the `IsAdminUser` permissions class will deny permission to users unless `user.is_staff` is `True` in which permission will be allowed
+- the `IsAuthneticatedOrReadOnly` will allow authenticated users to perform any request. The requests for unauthorised users permitted only is method is **safe** -- `GET` `HEAD` or `OPTIONS`
+- `DjangoModelPermissions` must only be applied to views that have a `.queryset` property or `.get_queryset()` method
+    - authorization occurs only if user is **authenticated** and has **relevant per-object permissions** and **relevant model permissions** assigned
+    - `POST` requests require user to have the `add` permission on model
+    - `PUT` and `PATCH` requests require user to have the `change` permission on model
+    - `DELETE` requests require user to have the `delete` permission on model
+    - Note the fact that `DjangoObjectPermissions` can use custom model permissions by overriding `DjangoObjectPermissions` and setting the `.perms_map` property
+## Custom Permissions
+- to have a custom permission, override the `BasePermission` and implement either or both...
+    - `.has_permission(self, request, view)`
+    - `.has_object_permission(self, request, view, obj)`
+        - methods should return `TRUE` if request is granted access, otherwise it is `FALSE`
+
+- examples of permissions...
+```python
+from rest_framework import permissions
+
+class BlocklistPermission(permissions.BasePermission):
+    """
+    Global permission check for blocked IPs.
+    """
+
+    def has_permission(self, request, view):
+        ip_addr = request.META['REMOTE_ADDR']
+        blocked = Blocklist.objects.filter(ip_addr=ip_addr).exists()
+        return not blocked
+```
+- objec-level permission...
+
+```python
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    """
+    Object-level permission to only allow owners of an object to edit it.
+    Assumes the model instance has an `owner` attribute.
+    """
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        if request.method in permissions.SAFE_METHODS:
+            return True
+
+        # Instance must have an attribute named `owner`.
+        return obj.owner == request.user
+```
