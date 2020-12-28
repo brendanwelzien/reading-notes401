@@ -71,16 +71,17 @@ class SneakerSerializer(ModelSerializer):
 ```python
 from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from .models import SneakerSerializer
+from .models import Sneaker
+from .serializers import SneakerSerializer
 
 class SneakerListCreate(ListCreateAPIView):
     queryset = Sneaker.objects.all() # doesnt always need to be all if you want to filter
     serializer_class = SneakerSerializer 
-class SnackRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
+class SneakerRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
     queryset = Sneaker.objects.all()
     serializer_class = SneakerSerializer
 ```
-- almost at full crud, now we need to connect the RUD to urls
+- almost at full crud, now we need to connect the CRUD to urls
 - users get created by administrator.. so login to /admin after creating a `python manage.py createsuperuser` and `python manage.py runserver`
 - go to`urls.py` in sneakers
 
@@ -95,7 +96,7 @@ urlpatterns = [
 ```
 - go to server route `api/v1/sneakers/` and check for CRUD
 
--  now go to `settings.py` and add *permissions* classes
+-  now go to `settings.py` and add *permissions* classes after STATIC_URL
 ```python
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -130,13 +131,13 @@ class IsPurchaserOrReadOnly(permissions.BasePermission):
 ```
 - head to `views.py` to connect the permission and add this....
 ```python
-import .permissions import IsPurchaserOrReadOnly
+from .permissions import IsPurchaserOrReadOnly
 class SneakerRetrieveUpdateDestroy(RetrieveUpdateDestroyAPIView):
     
     queryset = Sneaker.objects.all()
     serializer_class = SneakerSerializer
 
-    permission_classes = (IsPurcahserOrReadOnly,)
+    permission_classes = (IsPurchaserOrReadOnly,)
 ```
 - user should now only be able to get / read the list and not delete or put it
 - this is an example of one permission, add more if needed
@@ -157,7 +158,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework_simplejwt.authentication.JWTAuthentication',
             'rest_framework.authentication.SessionAuthentication',
-            'rest_framework.BasicAuthentication',
+            'rest_framework.authentication.BasicAuthentication',
     )
 }
 ```
@@ -208,7 +209,7 @@ urlpatterns = [
     # command: python/code/manage.py runserver 0.0.0.0:8000
 ```
 - the port needs to match the `ports` section in the yml file
-- now new to rebuild the docke file
+- now new to rebuild the docker file
 - `docker-compose up --build` or `docker-compose up`
 - go into httpie
 - `http POST :8000/api/token/ username=brendan password=xxx`
