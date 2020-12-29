@@ -216,3 +216,8 @@ urlpatterns = [
     - now the server is running as production server and NOT DATABASE SERVER
 - turn `DEBUG`: False in `settings.py`
     - now routes will show bad error bc we do not want to show front-end all of the server-creator information
+
+## API Deployment
+- make a web host capable of serving our Docker container and let container worry about the rest
+- microservicing 
+- the heroku.yml web: gunicorn app-Name.wsgi need to be the same name as in settings url
