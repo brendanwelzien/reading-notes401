@@ -395,3 +395,349 @@ ReactDOM.render(
   document.getElementById('root')
 );
 ```
+
+## Conditional Rendering
+- you can create distinct components that hold certain behaviors where you can *render* only **some** of them depending on state of application
+- use `if` or `conditional operator` to create elements representing current state, and then let React update UI to match
+```js
+function UserGreeting(props){
+  return <h1> Welcome back User! </h1>;
+}
+
+function GuestGreeting(props){
+  return <h1> Sign up! </h1>;
+}
+```
+- now we separate to render based on behavior
+```js
+function Greeting(props) {
+  const isLoggedIn = props.isLoggedIn;
+  if (isLoggedIn) {
+    return <UserGreeting />;
+  }
+  return <GuestGreeting />;
+}
+
+ReactDOM.render(
+  // Try changing to isLoggedIn={true}:
+  <Greeting isLoggedIn={false} />,
+  document.getElementById('root')
+);
+```
+### Element Variables
+- use variables to store elements to conditionally render a part of the component
+```js
+class LoginControl extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleLoginClick = this.handleLoginClick.bind(this);
+    this.handleLogoutClick = this.handleLogoutClick.bind(this);
+    this.state = {isLoggedIn: false};
+  }
+
+  handleLoginClick() {
+    this.setState({isLoggedIn: true});
+  }
+
+  handleLogoutClick() {
+    this.setState({isLoggedIn: false});
+  }
+
+  render() {
+    const isLoggedIn = this.state.isLoggedIn;
+    let button;
+    if (isLoggedIn) {
+      button = <LogoutButton onClick={this.handleLogoutClick} />;
+    } else {
+      button = <LoginButton onClick={this.handleLoginClick} />;
+    }
+
+    return (
+      <div>
+        <Greeting isLoggedIn={isLoggedIn} />
+        {button}
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <LoginControl />,
+  document.getElementById('root')
+);
+```
+### Inline Operators
+- `&&` evaluates the left side first, if left side is true then right side will be executed
+- if-else is `?` which is `true : false`
+- in some cases you want a component **NOT** to render, to do this return **null** instead of its render output
+
+## Lists and Keys
+- you can build collections of elements and include them in JSX by using `{}`
+```js
+const nums = [1, 2, 3, 4, 5];
+const listNums = nums.map((nums) =>
+<li>{nums}</li>
+)
+ReactDOM.render(
+  <ul>{listNums}</ul>,
+  document.getElementById('root')
+);
+```
+### Basic List Component
+- usually you want to render lists inside a component
+- example from reactjs.org
+```js
+function NumberList(props) {
+  const numbers = props.numbers;
+  const listItems = numbers.map((number) =>
+    <li key={number.toString()}>
+    {number}
+    </li>
+  );
+  return (
+    <ul>{listItems}</ul>
+  );
+}
+
+const numbers = [1, 2, 3, 4, 5];
+ReactDOM.render(
+  <NumberList numbers={numbers} />,
+  document.getElementById('root')
+);
+```
+- you need a `key` to include when creating lists of elements
+### Keys
+- keys help React identify which items changed, added, or removed
+- keys should be given to elements inside array to give them a *stable* identity
+  - use a string that uniquely identifies a list item among its siblings... Most often you would use IDs from your *data as keys*
+```js
+const todoItems = todos.map((todo) =>
+  <li key={todo.id}>
+    {todo.text}
+  </li>
+);
+```
+- when you do not have stable IDs for rendered items, you may use `index` as a key as last resort
+
+```js
+<li key={index}>
+  {todo.text}
+</li>
+);
+```
+### Extracting Components w Keys
+- rule of thumb: elements inside the `map()` call need keys
+- keys do not need to be globally unique, but must be among their siblings
+
+## Forms
+```js
+class NameForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {value: ''};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('A name was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+- use setState for the value to change whenever the value is updated
+
+- the `<textarea>` element defines its text by its children
+```js
+class EssayForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      value: 'Please write an essay about your favorite DOM element.'
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('An essay was submitted: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Essay:
+          <textarea value={this.state.value} onChange={this.handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+- the `this.state.value` is initialized in the constructor so that the text area starts off w some text in it
+- the `<select>` creates a drop-down list with using `<option>` and `value`
+```js
+class FlavorForm extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {value: 'coconut'};
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({value: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('Your favorite flavor is: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Pick your favorite flavor:
+          <select value={this.state.value} onChange={this.handleChange}>
+            <option value="grapefruit">Grapefruit</option>
+            <option value="lime">Lime</option>
+            <option value="coconut">Coconut</option>
+            <option value="mango">Mango</option>
+          </select>
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
+  }
+}
+```
+- the `<input type="file">` lets user choose one or more files from their device storage to be uploaded to a server
+
+## Lifting State Up
+```js
+class Calculator extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {temperature: ''};
+  }
+
+  handleChange(e) {
+    this.setState({temperature: e.target.value});
+  }
+
+  render() {
+    const temperature = this.state.temperature;
+    return (
+      <fieldset>
+        <legend>Enter temperature in Celsius:</legend>
+        <input
+          value={temperature}
+          onChange={this.handleChange} />
+        <BoilingVerdict
+          celsius={parseFloat(temperature)} />
+      </fieldset>
+    );
+  }
+}
+```
+- an input is rendered that lets you enter the temperature and keeps value in this.state.temperature
+
+- two inputs
+```js
+const scaleNames = {
+  c: 'Celsius',
+  f: 'Fahrenheit'
+};
+
+class TemperatureInput extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleChange = this.handleChange.bind(this);
+    this.state = {temperature: ''};
+  }
+
+  handleChange(e) {
+    this.setState({temperature: e.target.value});
+  }
+
+  render() {
+    const temperature = this.state.temperature;
+    const scale = this.props.scale;
+    return (
+      <fieldset>
+        <legend>Enter temperature in {scaleNames[scale]}:</legend>
+        <input value={temperature}
+               onChange={this.handleChange} />
+      </fieldset>
+    );
+  }
+}
+```
+## Composition vs Inheritance
+### Containment
+- some components do not know their children ahead of time
+- such components should use the special `children` prop to pass children elements directly into their output
+```js
+function WelcomeDialog() {
+  return (
+    <FancyBorder color="blue">
+      <h1 className="Dialog-title">
+        Welcome
+      </h1>
+      <p className="Dialog-message">
+        Thank you for visiting our spacecraft!
+      </p>
+    </FancyBorder>
+  );
+}
+```
+- anything inside fancyBorder gets passed into the component as a `children` prop
+- specialization = adding a more specific component that builds off a generic one (WelcomeDialog vs. Dialog)
+
+## Thinking in React
+1. break down the UI into a component hierarchy
+  - draw boxes around every component and subcomponent in mock and give them all names
+  - use single responsibility principle, a component should ideally do one thing
+2. build a static version in React
+  - build components that reuses other components and pass data using *props*, as they are a way of passing data from parent to child
+  - *state* is reserved for interactivity, that is data changes over time
+  - there are two types of model data in React: *props* and *state*
+3. identify minimal (but complete) representation of UI state
+  - to make UI more interactive, you need to trigger changes to underlying data model as this is achieved with *state*
+  - try not to Repeat Yourself!
+4. Identify where your state shoud live
+  - React is a one-way data flow down component hierarchy
+  - for each piece of state in your application:
+    - Identify every component that renders something based on that state.
+    - Find a common owner component (a single component above all the components that need the state in the hierarchy).
+    - Either the common owner or another component higher up in the hierarchy should own the state.
+    - If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common owner component.
+5. add inverse data flow
