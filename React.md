@@ -741,3 +741,148 @@ function WelcomeDialog() {
     - Either the common owner or another component higher up in the hierarchy should own the state.
     - If you can’t find a component where it makes sense to own the state, create a new component solely for holding the state and add it somewhere in the hierarchy above the common owner component.
 5. add inverse data flow
+
+
+# Next.js
+- it is the React framework
+## Creating a Next.js app
+1. open terminal and `cd` into a directory and run `npx create-next-app nextjs-blog --use-npm --example "https://github.com/vercel/next-learn-starter/tree/master/learn-starter"`
+- this is for the starter blog app
+2. we now have a directory called `nextjs-blog`, now `cd` into it
+3. run `npm run dev`
+- this starts the development server on port 3000
+
+- editing the page...
+4. make sure the Next.js development server is still running
+5. open `pages/index.js` with text editor
+6. change something and check the browser!
+
+- adding more pages...
+  - pages are associated with their / route after pages
+7. create a new page by creating a `posts` directory under `pages`
+8. create a file called `first-post-js` inside `posts` directory with this...
+```js
+export default function FirstPost(){
+  return <h1> First Post </h1>
+}
+```
+- pages/posts/first-post-js
+  - /posts/first-post is the route
+9. Linking components
+- link between pages using the `Link` Component from `next/link` to wrap the `<a>` tag
+- `<link>` allows you to do client-side navigation to a different page in the application
+
+10. open `pages/index.js` and import the `Link` component by adding `import Link from 'next/link'`
+```js
+<h1 className="title">
+  Read{' '}
+  <Link href="/posts/first-post">
+    <a>this page!</a>
+  </Link>
+</h1>
+```
+- client-side navigation
+- the `link` component enables client-side navigation between two pages in the same Next.js app
+
+## Assets, MetaData, and CSS
+- Next.js servers static files, like images, under the *top-level* `public` directory... Files inside the `public` can be referenced from the root of the app
+```js
+<Head>
+  <title>Create Next App</title>
+  <link rel="icon" href="/favicon.ico" />
+</Head>
+```
+- notice that `<Head>` is capitalized bc it is a React component
+- if you want to add make sure to import
+  - `import Head from 'next/head'`
+```js
+export default function FirstPost() {
+  return (
+    <>
+      <Head>
+        <title>First Post</title>
+      </Head>
+      <h1>First Post</h1>
+      <h2>
+        <Link href="/">
+          <a>Back to home</a>
+        </Link>
+      </h2>
+    </>
+  )
+}
+```
+```js
+<style jsx>{`
+  …
+`}</style>
+```
+- this is the css incorporated within React component
+- you can import `.css` and `.scss` files
+
+## Creating a layout component
+- create a top-level *directory* called `components`
+- inside `components`, create a file called `layout.js` with...
+```js
+export default function Layout({children }) {
+  return <div>{children}</div>
+}
+```
+- then open `pages/posts/first-post.js` and add an import for the `Layout` component and make it the outermost component
+```js
+import Head from 'next/head'
+import Link from 'next/link'
+import Layout from '../../components/layout'
+
+export default function FirstPost() {
+  return (
+    <Layout>
+      <Head>
+        <title>First Post</title>
+      </Head>
+      <h1>First Post</h1>
+      <h2>
+        <Link href="/">
+          <a>Back to home</a>
+        </Link>
+      </h2>
+    </Layout>
+  )
+}
+```
+## adding CSS
+- go to `Layout` component
+- create a file called `components/layout.module.css`
+```js
+.container {
+  max-width: 36rem;
+  padding: 0 1rem;
+  margin: 3rem auto 6rem;
+}
+```
+- to use this `container` class inside `components/layout.js` you need to...
+  - import css file and assign name to it like `styles`
+  - use `styles.container` as the `className`
+- open `components/layout.js`
+```js
+import styles from './layout.module.css'
+
+export default function Layout({ children }) {
+  return <div className={styles.container}>{children}</div>
+}
+```
+## global styles
+- to have styling for every page...
+  - create a file called `pages/_app.js` and add...
+```js
+export default function App({ Component, pageProps }) {
+  return <Component {...pageProps} />
+}
+```
+- you need to restart development server by ctrl + c and then do `npm run dev`
+
+
+
+
+
+
