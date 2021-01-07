@@ -881,8 +881,78 @@ export default function App({ Component, pageProps }) {
 ```
 - you need to restart development server by ctrl + c and then do `npm run dev`
 
+## Pre-Rendering and Data Fetching
+- next.js pre-renders every page in advance which results in better performance and SEO
+  - check that it is happening by disables JS in browser and try accessing page
 
+**Forms of Pre-Rendering**
+1. *Static Generation*
+- pre-rendering method that generates the HTML at **build time**. The pre-rendered HTML is then *reused* on each request
+2. *Server-Side Rendering*
+- is the pre-rendering method that generates the HTML on *each request*
 
+**When To Use**
+1. *Static Generation* should be whenever used possible, but ask yourself "Can I pre-render this page **ahead** of a user's request?
+  - *Static Generation* is not a good idea if you cannot pre-render a page ahead of a request
+2. *Server-Side Rendering* will be slower, but will always be up-to-date
 
+### Static Generation
+- can be done with or without data
+- however, some pages may not be able to render HTML without first fetching some external data
+  - may have to access file system, external API, or query your database at build-time
 
+- when you export a page component, you can also export a `async` function called `getStaticProps`
+  1. `getStaticProps` runs at build time in production
+  2. Inside the function, you can fetch external data and send as props to the page
+  - basically, you are telling Next.js "this page has some data dependencies, so when you pre-render this page at build-time make sure to resolve them first"
+    ### Implementing Static Props by Parsing
+    - `npm install gray-matter`
+    - this helps us parse metadata in md file
+```js
+export async function getSortedPostsData() {
+  // Instead of the file system,
+  // fetch post data from an external API endpoint
+  const res = await fetch('..')
+  return res.json()
+}
+```
+- in development, `npm run dev` `getStaticProps` runs on every request
+- in production, `getStaticProps` runs at build time
 
+### Fetching Data at Request Time (Server-Side Rendering)
+- to use server-side rendering you need to export `getServerSideProps` instead of `getStaticProps` from your page
+
+## Dynamic Routing
+- when you want the URL for pages to depend on data such as for a blog
+- page path depends on external data
+
+- when we want a post for a blog use a path such as `/posts/<id>` where `id` is the name of a key or file, etc.
+- create a page called `[id].js`... pages that begin with [] are dynamic routes!
+```js
+import Layout from '../../components/layout'
+
+export default function Post() {
+  return <Layout>...</Layout>
+}
+
+export async function getStaticPaths() {
+  // Return a list of possible value for id
+export async function getStaticProps({params}){
+  // fetch necessary data for blog post using params.id
+}
+```
+- use `getStaticProps` to fetch data for a post
+
+**How to generate pages w dynamic routes**
+- if you want to generate a page at a path called `/posts/<id>` where `id` can be dynamic, then...
+
+- a Page file must contain...
+1. A React component to render this page
+2. *getStaticPaths* which returns an array of possible values for id
+3. *getStaticProps* which fetches necessary data for the post with id
+
+## Deployment
+- Github repo can be public or private, no need to initialize with README or other files
+- deploy to Vercel platform, create an account at https://vercel.com/signup
+- import your repo on Vercel
+- Develop, Preview, Ship
