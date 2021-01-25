@@ -55,3 +55,21 @@ ReactDOM.render(<Button label="Save" />, mountNode);
     6. Since this is the first time React is rendering the element, React will communicate w browser to display element(mounting)
     
 7. React components can have a private state
+
+
+
+
+# React Native
+- framework for building native ios or android apps using Javascript
+- facebook, instagram are built with react native
+1. React native CLI or Expo CLI to build react native apps
+
+- use expo if you have never built an app before
+- expo does have its drawbacks as it does not have all the flexibility compared to react native CLI
+
+## Setting up development environment
+1. make sure you are running node 12.0 version or higher
+- `node -v`
+2. `npm i -g expo-cli`
+3. install expo client on your phone so you can run your app on device
+... will continue by creating an app
