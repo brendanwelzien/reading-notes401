@@ -18,7 +18,7 @@ Each app has a __init__.py file identifying it as a Python package. There are 6 
 - models.py is where we define our database models
 - tests.py is for our app-specific tests
 - views.py is where we handle the request/response logic for our web app
-- add a urls.py to handle *request/response* logic for app
+- urls.py to handle *request/response* logic for app
 
 1. go to `settings.py` add the new `app` to `INSTALLED_APPS`, to local
 2. run `python manage.py migrate` // possibly use `makemigrations` as well
@@ -251,7 +251,7 @@ class ExampleView(APIView):
 - the `AllowAny` permission class will allow unrestricted access regardless of the request made!
 - the `IsAuthenticated` permission class denies permission to any unathenticated user and allows permission otherwise!
 - the `IsAdminUser` permissions class will deny permission to users unless `user.is_staff` is `True` in which permission will be allowed
-- the `IsAuthneticatedOrReadOnly` will allow authenticated users to perform any request. The requests for unauthorised users permitted only is method is **safe** -- `GET` `HEAD` or `OPTIONS`
+- the `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any request. The requests for unauthorised users permitted only is method is **safe** -- `GET` `HEAD` or `OPTIONS`
 - `DjangoModelPermissions` must only be applied to views that have a `.queryset` property or `.get_queryset()` method
     - authorization occurs only if user is **authenticated** and has **relevant per-object permissions** and **relevant model permissions** assigned
     - `POST` requests require user to have the `add` permission on model
