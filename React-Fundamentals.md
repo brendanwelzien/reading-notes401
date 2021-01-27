@@ -73,3 +73,40 @@ ReactDOM.render(<Button label="Save" />, mountNode);
 2. `npm i -g expo-cli`
 3. install expo client on your phone so you can run your app on device
 ... will continue by creating an app
+4. `expo init` to pick starting template
+5. `npm start` in termninal will start the app
+6. in simulator to open developer tool use `ctrl + d` and `command + d`, the dropdown list should appear
+
+- since we do not have div and other html access we use `View /` as a layout to represent such entities
+-  `safeareaview` used for padding and proper formatting, which you need to import
+- wrap `text /` with component
+
+# Dimensions of Components
+- import view component
+- account for points in pixels and the scale multiplier which will give the correct pixels needed for the height and width of device
+- use console.log(dimensions.get("screen"));
+- import
+- changes `orientation` mode to default from portrait to adjust for dimension changes in app.json
+- hooks start with `use`
+  - npm i @react-native-community/hooks
+  - import { useDimensions, useDeviceOrientation } from '@react-native-community/hooks'
+  - this will get us the dimensions of the screen for multiple orientations
+  - console.log(useDimensions, useDeviceOrientation)
+    - this will give us the properties for each orientation when we rotate the phone (portrait and/or landscape)
+    - const orientation = useDeviceOrientation(); 
+
+# Flexbox
+- setting flex to 1 gives the view to take entire space of screen
+- align children inside flex container
+- add another `<View />` with `style={{}}` as a child to fill container
+- `flexDirection`, by default items are laid out in portrait mode
+- justifyContent aligns content along main axis (either column for flexDirection Column or row for flexDirection Row)
+- alignItems aligns content along secondary axis
+- alignSelf is used for children element to move independently inside flex container
+- alignContent only works when flexWrap is enabled
+- absolute positioning: moves dependent container
+- relative positioning: moves inside container
+
+- create a new folder `app` and put all of the source code in there, so move the assets folder inside and update the path for assets in json file if needed
+- add component folders if you want for organization... Such as screens and then screens/welcomeScreen.js, etc.
+
