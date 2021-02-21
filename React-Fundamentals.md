@@ -110,3 +110,109 @@ ReactDOM.render(<Button label="Save" />, mountNode);
 - create a new folder `app` and put all of the source code in there, so move the assets folder inside and update the path for assets in json file if needed
 - add component folders if you want for organization... Such as screens and then screens/welcomeScreen.js, etc.
 
+# Importing style sheet
+
+- when wanting to add style
+  1. you can use the *style* property to add styles inline BUT you should use the **styleSheet* for styling
+
+App.js
+```js
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import PresentationalComponent from './PresentationalComponent'
+
+export default class App extends React.Component {
+   state = {
+      myState: 'This is my state'
+   }
+   render() {
+      return (
+         <View>
+            <PresentationalComponent myState = {this.state.myState}/>
+         </View>
+      );
+   }
+}
+```
+PresentationComponent.js
+```js
+import React, { Component } from 'react'
+import { Text, View, StyleSheet } from 'react-native'
+
+const PresentationalComponent = (props) => {
+   return (
+      <View>
+         <Text style = {styles.myState}>
+            {props.myState}
+         </Text>
+      </View>
+   )
+}
+export default PresentationalComponent
+
+const styles = StyleSheet.create ({
+   myState: {
+      marginTop: 20,
+      textAlign: 'center',
+      color: 'blue',
+      fontWeight: 'bold',
+      fontSize: 20
+   }
+})
+```
+- notice the `const` for styles and to access you use `props.myState`
+  - this will render a blank screen with blue text "this is my state"
+
+# Layout
+- flexDirection
+  - 'column', 'row'	
+    - Used to specify if elements will be aligned vertically or horizontally.
+- justifyContent
+  - 'center', 'flex-start', 'flex-end', 'space-around', 'space-between'
+    - Used to determine how should elements be distributed inside the container.
+- alignItems
+  - 'center', 'flex-start', 'flex-end', 'stretched'
+    - Used to determine how should elements be distributed inside the container along the secondary axis (opposite of flexDirection)
+
+App.js
+```js
+import React, { Component } from 'react'
+import { View, StyleSheet } from 'react-native'
+
+const Home = (props) => {
+   return (
+      <View style = {styles.container}>
+         <View style = {styles.redbox} />
+         <View style = {styles.bluebox} />
+         <View style = {styles.blackbox} />
+      </View>
+   )
+}
+
+export default Home
+
+const styles = StyleSheet.create ({
+   container: {
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'grey',
+      height: 600
+   },
+   redbox: {
+      width: 100,
+      height: 100,
+      backgroundColor: 'red'
+   },
+   bluebox: {
+      width: 100,
+      height: 100,
+      backgroundColor: 'blue'
+   },
+   blackbox: {
+      width: 100,
+      height: 100,
+      backgroundColor: 'black'
+   },
+})
+```
