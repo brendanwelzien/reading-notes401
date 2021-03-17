@@ -1,5 +1,5 @@
+- cuts in half the array and sets low and high in a loop, then does the same process until the array is shortened until the value is found
 ```python
-# cuts in half the array and sets low and high in a loop, then does the same process until the array is shortened until the value is found
 def binary_search(input_array, value):
     low = 0
     high = len(input_array) - 1
