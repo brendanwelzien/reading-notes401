@@ -2,6 +2,7 @@
 - in most cases, quicksort is one of the *most* efficient sorting methods
 - pick one of the values, known as the **pivot**: move everything that is larger than it on the right side and everything that is smaller on the left side
 - do so recursively by picking a pivot for the upper and lower section of the array and sort them similarly
+- quicksort may also usually be On^2 especially with the larger sets of data we are analyzing
 
 ```python
 # divide the fcn
